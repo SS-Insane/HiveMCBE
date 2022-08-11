@@ -1,6 +1,6 @@
 import json
 import requests
-import hiveMCBE as hive
+import HiveMCBE as hive
 
 
 class HivePlayer:

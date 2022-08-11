@@ -1,6 +1,6 @@
 import json
 import requests 
-import hiveMCBE as hive
+import HiveMCBE as hive
 
 #for getting monthly leaderboard or all time leaderboard if all_time == True
 def leaderboard(game, count = 50, all_time = False):
