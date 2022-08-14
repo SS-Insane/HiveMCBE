@@ -15,14 +15,19 @@ class HivePlayer:
 			r = requests.get(f"{self.base_url}/all/{self.games[game]['identifier']}/{self.username}")
 			if r.ok == True:
 				data = hive.calculate_extra_stats(json.loads(r.text))
-				level = hive.calculate_level(game, data["xp"])
-				data["level"] = level[0]
-				data["xp_for_next_level"] = level[1]
+				#check if data is a list, if it is then its empty so raise PlayerNotFound
+				if data == list():
+					raise hive.PlayerNotFound(f'Player "{self.username}" was not found in Hive database')
+				else:
+					level = hive.calculate_level(game, data["xp"])
+					data["level"] = level[0]
+				
+					data["xp_for_next_level"] = level[1]
 				return data
 			elif r.status_code == 500:
 				raise hive.InternalServerError("Hive API returned status code 500")
 			else:
-				raise hive.PlayerNotFound(f'Player "{self.username}" was found in Hive database')
+				raise hive.PlayerNotFound(f'Player "{self.username}" was not found in Hive database')
 		else:
 			raise hive.MinigameNotFound(f'Minigame "{game}" does not exist')
 	

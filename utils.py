@@ -21,6 +21,7 @@ def calculate_extra_stats(data):
 	if "victories" in data:
 		data["losses"] = data["played"] - data["victories"]
 		if data["played"] != 0:
+			data["wlr"] = round(data["victories"]/data["played"])
 			data["win_rate"] = f"{round(data['victories']/data['played']*100)}%"
 		else:
 			data["win_rate"] = "0%"
