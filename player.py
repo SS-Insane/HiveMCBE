@@ -10,11 +10,15 @@ class HivePlayer:
 		self.base_url = hive.base_url
 	
 	#for getting player statistics for a minigame
-	async def stats(self, game):
+	async def fetch_stats(self, game):
 		if game in self.games.keys():
-			r = requests.get(f"{self.base_url}/all/{self.games[game]}/{self.username}")
+			r = requests.get(f"{self.base_url}/all/{self.games[game]['identifier']}/{self.username}")
 			if r.ok == True:
-				return(json.loads(r.text)) #converting json text to dict
+				data = hive.calculate_extra_stats(json.loads(r.text))
+				level = hive.calculate_level(game, data["xp"])
+				data["level"] = level[0]
+				data["xp_for_next_level"] = level[1]
+				return data
 			elif r.status_code == 500:
 				raise hive.InternalServerError("Hive API returned status code 500")
 			else:
@@ -23,9 +27,9 @@ class HivePlayer:
 			raise hive.MinigameNotFound(f'Minigame "{game}" does not exist')
 	
 	#for getting player entry in current monthly leaderboard
-	async def monthly_leader(self,game):
+	async def fetch_in_monthly_lb(self,game):
 		if game in self.games.keys():
-			r = requests.get(f"{self.base_url}/monthly/player/{self.games[game]}/{self.username}")
+			r = requests.get(f"{self.base_url}/monthly/player/{self.games[game]['identifier']}/{self.username}")
 			if r.ok == True:
 				return(json.loads(r.text))
 			elif r.status_code == 500:
@@ -36,9 +40,9 @@ class HivePlayer:
 			raise hive.MinigameNotFound(f'Minigame "{game}" does not exist')
 	
 	#for getting player entry in leaderboard of a specific month
-	async def specific_monthly_leader(self,game, year, month):
+	async def fetch_in_specific_lb(self,game, year, month):
 		if game in self.games.keys():
-			r = requests.get(f"{self.base_url}/monthly/player/{self.games[game]}/{self.username}/{year}/{month}")
+			r = requests.get(f"{self.base_url}/monthly/player/{self.games[game]['identifier']}/{self.username}/{year}/{month}")
 			if r.ok == True:
 				return(json.loads(r.text))
 			elif r.status_code == 500:
